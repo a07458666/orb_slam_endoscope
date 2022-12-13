@@ -1,11 +1,5 @@
 # orb_slam_endoscope
 
-## Create workspace
-```
-cd ..
-mkdir workspace
-cd workspace
-```
 
 ## Pangolin (visualization)
 
