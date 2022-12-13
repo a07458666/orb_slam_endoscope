@@ -33,6 +33,11 @@ cmake --build build -t pypangolin_pip_install
 ## openCV
 ```
 sudo apt update
+sudo apt-get install libpng-dev
+sudo apt-get install libjpeg-dev
+sudo apt-get install libopenexr-dev
+sudo apt-get install libtiff-dev
+sudo apt-get install libwebp-dev
 sudo apt install libopencv-dev python3-opencv
 
 git clone https://github.com/opencv/opencv.git
