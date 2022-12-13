@@ -9,7 +9,7 @@ cd workspace
 
 ## Pangolin (visualization)
 
-# PyUnicode_AsUTF8’ was not declared in this scope
+### PyUnicode_AsUTF8’ was not declared in this scope
 https://blog.csdn.net/qq_40644435/article/details/120005868
 
 ```
@@ -25,10 +25,6 @@ cd Pangolin
 cmake -DPYTHON_EXECUTABLE=/usr/bin/python3 --B build
 cmake --build build
 
-# with Ninja for faster builds (sudo apt install ninja-build)
-cmake -B build -GNinja
-cmake --build build
-
 # GIVEME THE PYTHON STUFF!!!! (Check the output to verify selected python version)
 cmake --build build -t pypangolin_pip_install
 
@@ -39,7 +35,6 @@ cmake --build build -t pypangolin_pip_install
 sudo apt update
 sudo apt install libopencv-dev python3-opencv
 
-sudo python2 get-pip.py
 git clone https://github.com/opencv/opencv.git
 cd opencv/
 git checkout 4.4.0
