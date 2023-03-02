@@ -70,6 +70,18 @@ def read_file_list(filename,remove_bounds = False):
     list = [(float(l[0]),l[1:]) for l in list if len(l)>1]
     return dict(list)
 
+def read_file_path(folder_path,remove_bounds = False):
+    images_dict = {}
+    for root, dirs, files in os.walk(folder_path):
+        for file in files:
+            if file.endswith(".jpg") or file.endswith(".jpeg") or file.endswith(".png") or file.endswith(".gif"):
+                file_path = os.path.join(root, file)
+                relative_path = os.path.relpath(file_path, folder_path)
+                relative_path = os.path.join(os.path.split(folder_path)[1], relative_path)
+                file_name = float(os.path.splitext(file)[0])
+                images_dict[file_name] = relative_path
+    return images_dict
+
 def associate(first_list, second_list,offset,max_difference):
     """
     Associate two dictionaries of (stamp,data). As the time stamps never match exactly, we aim 
@@ -115,8 +127,11 @@ if __name__ == '__main__':
     parser.add_argument('--max_difference', help='maximally allowed time difference for matching entries (default: 0.02)',default=0.02)
     args = parser.parse_args()
 
-    first_list = read_file_list(args.first_file)
-    second_list = read_file_list(args.second_file)
+    # first_list = read_file_list(args.first_file)
+    # second_list = read_file_list(args.second_file)
+    
+    first_list = read_file_path(args.first_file)
+    second_list = read_file_path(args.second_file)
 
     matches = associate(first_list, second_list,float(args.offset),float(args.max_difference))    
 
@@ -125,6 +140,6 @@ if __name__ == '__main__':
             print("%f %s"%(a," ".join(first_list[a])))
     else:
         for a,b in matches:
-            print("%f %s %f %s"%(a," ".join(first_list[a]),b-float(args.offset)," ".join(second_list[b])))
+            print("%f %s %f %s"%(a,"".join(first_list[a]),b-float(args.offset),"".join(second_list[b])))
             
         

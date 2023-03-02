@@ -106,3 +106,41 @@ python3 videoToImg.py
 ```
 ./Examples/Monocular/mono_tum Vocabulary/ORBvoc.txt ./Examples/Monocular/TUM1.yaml ../../Downloads/output
 ```
+
+## Run ORB SLAM 3 (RGB-D)
+- 生成associations.txt檔
+
+
+
+
+利用associate_endoscopy.py讀取rgb與depth所在的資料夾，圖片檔案名稱是time stamps，也可以根據FPS自行生成time stamps，只要檔名是time stamps就好．
+
+### Dataset Path內
+![associations.txt](./img/1.png)
+
+### rgb 與 depth內
+![associations.txt](./img/2.png)
+
+### 生成associations.txt檔案
+![associations.txt](./img/5.png)
+
+參數
+1. rgb資料夾位置
+2. depth資料夾位置
+3. 輸出位置
+
+```bash
+python3 evaluation/associate_endoscopy.py /home/aaeon/Downloads/tum/rgbd_dataset_freiburg1_xyz/rgb /home/aaeon/Downloads/tum/rgbd_dataset_freiburg1_xyz/depth > /home/aaeon/Downloads/tum/rgbd_dataset_freiburg1_xyz/associations.txt
+```
+
+### 執行RGB-D
+參數
+1. ORB路徑
+2. rgb & depth資料根目錄
+3. association.txt路徑
+```
+./Examples/RGB-D/rgbd_tum Vocabulary/ORBvoc.txt ./Examples/RGB-D/Endoscopy.yaml /home/aaeon/Downloads/tum/rgbd_dataset_freiburg1_xyz/ /home/aaeon/Downloads/tum/rgbd_dataset_freiburg1_xyz/associations.txt
+```
+
+### 執行結果
+![associations.txt](./img/4.png)
