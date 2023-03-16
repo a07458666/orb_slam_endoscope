@@ -113,7 +113,8 @@ include/GeometricTools.h
 include/TwoViewReconstruction.h
 include/SerializationUtils.h
 include/Config.h
-include/Settings.h)
+include/Settings.h
+)
 
 add_subdirectory(Thirdparty/g2o)
 
@@ -390,3 +391,22 @@ if(realsense2_FOUND)
             Examples_old/Stereo-Inertial/stereo_inertial_realsense_D435i.cc)
     target_link_libraries(stereo_inertial_realsense_D435i_old ${PROJECT_NAME})
 endif()
+
+set(Python_ADDITIONAL_VERSIONS 3.8)
+#find_package(Python 3 REQUIRED COMPONENTS Interpreter Development NumPy)
+#find_package(Python3.8)
+include_directories("/usr/include/python3.8/")
+#include_directories(${Python_NumPy_INCLUDE_DIRS})
+
+find_package(pybind11 CONFIG REQUIRED)
+include_directories(${pybind11_INCLUDE_DIRS})
+
+file(GLOB_RECURSE ORB_SLAM3_SRC
+    ${CMAKE_CURRENT_SOURCE_DIR}/Examples/pyimaislam/*.cc
+    ${CMAKE_CURRENT_SOURCE_DIR}/Examples/pyimaislam/*.h
+)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/pyimaislam)
+pybind11_add_module(imaislam MODULE ${ORB_SLAM3_SRC})
+target_link_libraries(imaislam PRIVATE ${PROJECT_NAME})
+
+
