@@ -2117,6 +2117,17 @@ void Tracking::Track()
         //   Eigen::Quaternionf q = mVelocity.unit_quaternion();
         //   << " " << q.x() << " " << q.y() << " " << q.z() << " " << q.w() << endl;
 
+        // add camera pose display
+        Eigen::Quaternionf q(mLastFrame.GetPose().rotationMatrix());
+        cout << "Camera Pose: " << "tx=" << pos(0) << ", ty=" << pos(1) << ", tz=" << pos(2)
+            << ", qx=" << q.x() << ", qy=" << q.y() << ", qz=" << q.z() << ", qw=" << q.w() << endl;
+
+        // compute velocity towards the front
+        Eigen::Vector3f forward = mLastFrame.GetPose().rotationMatrix() * Eigen::Vector3f::UnitZ();
+        double forward_velocity = forward.dot(t) / (mCurrentFrame.mTimeStamp - mLastFrame.mTimeStamp);
+        cout << setprecision(4) << "Velocity towards the front: " << forward_velocity << endl;
+
+
 #ifdef REGISTER_TIMES
         std::chrono::steady_clock::time_point time_EndPosePred = std::chrono::steady_clock::now();
 
