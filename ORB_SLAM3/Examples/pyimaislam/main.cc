@@ -80,7 +80,7 @@ class Pyimaislam
         
         bool reset();
         bool resetVelocity();
-        double TrackMonocular(cv::Mat im, double tframe);
+        double TrackMonocular(cv::Mat im, double tframe, bool frontVelocity);
         double get_deltf();
         double get_deltx();
         double get_delty();
@@ -93,8 +93,8 @@ class Pyimaislam
 Pyimaislam::Pyimaislam()
 {
     //Vocabulary/ORBvoc.txt ./Examples/Monocular/TUM1.yaml
-    char *a1="/home/insign/work/orb_slam_endoscope/ORB_SLAM3/Vocabulary/ORBvoc.txt";
-    char *a2="/home/insign/work/orb_slam_endoscope/ORB_SLAM3/Examples/Monocular/TUM1.yaml";
+    char *a1="/home/aaeon/workspace/orb_slam_endoscope/ORB_SLAM3/Vocabulary/ORBvoc.txt";
+    char *a2="/home/aaeon/workspace/orb_slam_endoscope/ORB_SLAM3/Examples/Monocular/Endoscopy.yaml";
     SLAM = new ORB_SLAM3::System(a1,a2,ORB_SLAM3::System::MONOCULAR,true);
     max_itime=10;
     resetVelocity();
@@ -120,7 +120,7 @@ bool  Pyimaislam::resetVelocity()
     lastframepose = Sophus::SE3f();
     deltat = Eigen::Vector3f();
     forwardVelocityDelta = 0;
-    frontVelocitys.clear()
+    frontVelocitys.clear();
     list_t.clear();
     list_tframe.clear();
     return true;
@@ -148,7 +148,7 @@ double Pyimaislam::TrackMonocular(cv::Mat image, double tframe, bool frontVeloci
     {
         Eigen::Vector3f forward = lastframepose.rotationMatrix() * Eigen::Vector3f::UnitZ();
         double forward_velocity = forward.dot(t);
-        frontVelocitys.push_back(forward_velocity)
+        frontVelocitys.push_back(forward_velocity);
         forwardVelocityDelta += forward_velocity;
         if(frontVelocitys.size()>max_itime)
         {
@@ -159,7 +159,7 @@ double Pyimaislam::TrackMonocular(cv::Mat image, double tframe, bool frontVeloci
     
     list_t.push_back(t);
     list_tframe.push_back(tframe-lasttframe);
-    if(list_t.size()>max_itime)
+    if(list_t.size() > max_itime)
     {
         deltat-=list_t.front();
         list_t.pop_front();
