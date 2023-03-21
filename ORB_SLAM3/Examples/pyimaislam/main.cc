@@ -13,7 +13,7 @@
 using namespace std;
 
 #define OK_STATE 2
-
+#define DEPTH
 namespace py = pybind11;
 
 namespace pybind11
@@ -80,7 +80,11 @@ class Pyimaislam
         
         bool reset();
         bool resetVelocity();
-        double TrackMonocular(cv::Mat im, double tframe, bool frontVelocity);
+#ifndef DPETH
+        double track(cv::Mat im, cv::Mat imDepth, double tframe, bool frontVelocity);
+#else
+        double track(cv::Mat im, double tframe, bool frontVelocity);
+#endif
         double get_deltf();
         double get_deltx();
         double get_delty();
@@ -94,8 +98,13 @@ Pyimaislam::Pyimaislam()
 {
     //Vocabulary/ORBvoc.txt ./Examples/Monocular/TUM1.yaml
     char *a1="/home/aaeon/workspace/orb_slam_endoscope/ORB_SLAM3/Vocabulary/ORBvoc.txt";
+#ifndef DPETH
+    char *a2="/home/aaeon/workspace/orb_slam_endoscope/ORB_SLAM3/Examples/RGB-D/Endoscopy.yaml";
+    SLAM = new ORB_SLAM3::System(a1,a2,ORB_SLAM3::System::RGBD,true);
+#else
     char *a2="/home/aaeon/workspace/orb_slam_endoscope/ORB_SLAM3/Examples/Monocular/Endoscopy.yaml";
     SLAM = new ORB_SLAM3::System(a1,a2,ORB_SLAM3::System::MONOCULAR,true);
+#endif    
     max_itime=10;
     resetVelocity();
 }
@@ -126,10 +135,18 @@ bool  Pyimaislam::resetVelocity()
     return true;
 }
 
-double Pyimaislam::TrackMonocular(cv::Mat image, double tframe, bool frontVelocity = true)
+#ifndef DPETH
+double Pyimaislam::track(cv::Mat image, cv::Mat imageDepth, double tframe, bool frontVelocity = true)
+#else
+double Pyimaislam::track(cv::Mat image, double tframe, bool frontVelocity = true)
+#endif
 {
     //std::cout << image << std::endl;
+#ifndef DPETH
     auto currentpose = SLAM->TrackMonocular(image,tframe);
+#else
+    auto currentpose = SLAM->TrackRGBD(image, imageDepth, tframe);
+#endif
 
     if (SLAM->GetTrackingState() != OK_STATE)
     {
@@ -236,7 +253,7 @@ PYBIND11_MODULE(imaislam, m)
 
     py::class_<Pyimaislam>(m, "Imaislam")
         .def(py::init<>())
-        .def("trackmonocular", &Pyimaislam::TrackMonocular)
+        .def("track", &Pyimaislam::track)
         .def("reset", &Pyimaislam::reset)
         .def("reset", &Pyimaislam::resetVelocity)
         .def("getdeltf", &Pyimaislam::get_deltf)

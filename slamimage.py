@@ -10,6 +10,7 @@ import math
 import glob
 import argparse
 
+from trtInfer import TensorRTInfer
 #video_path = './2022050601.mp4'
 # video_path = '/home/aaeon/maskyolo/video/2022021501.mp4'
 # vidcap = cv2.VideoCapture(video_path)
@@ -40,18 +41,34 @@ def add_value(array, new_value):
     array.append(float(new_value))
     array.pop(0)
 
+def preprocess_image(input_img):
+    img = input_img.copy()
+    mean = [123.675, 116.28, 103.53]
+    std = [58.395, 57.12, 57.375]
+    img = cv.resize(img, (512,512))
+    img = (img - mean) / std
+    img = np.transpose(img, (2,0,1))
+    img = torch.tensor(img)
+    np_image = np.float32(img.numpy()) # Batch
+    return np_image
+
 def parse_args():
     parser = argparse.ArgumentParser('SLAM')
     parser.add_argument('--data_path', type=str, default='/home/aaeon/Downloads/output_A/')
     parser.add_argument('--save_path', type=str, default='slam_2022032101.avi')
     parser.add_argument('--output_txt_path', type=str, default='output.txt')
     parser.add_argument('--frontVelocity', type=bool, default=True)
+    parser.add_argument('--depth', type=bool, default=True) # If you want to set false, the C code must also be modified
+    parser.add_argument('--depth_engine_path', type=str, default="./simipu.trt")
     
     return parser.parse_args()
 
 def main():
     args = parse_args()
     image, tframe = loadImage(args.data_path)
+    
+    if args.depth:
+        trt_infer = TensorRTInfer(args.depth_engine_path)
         
     slam = Imaislam()
     
@@ -66,7 +83,7 @@ def main():
     size = (image[0].shape[1], image[0].shape[0])
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
     out = cv2.VideoWriter(args.save_path, fourcc, 60, size)
-
+    
 
     with open(args.output_txt_path, 'w') as f :
         for i in range(len(tframe)):
@@ -76,7 +93,16 @@ def main():
             
             # ---eddie 0315
             # get the present delta
-            speed = "{: 8.6f}".format(slam.trackmonocular(image[i],tframe[i], args.frontVelocity))
+            if args.depth:
+                batcher_data = preprocess_image(image[i])
+                out_trt = trt_infer.infer(batcher_data, top=1)
+                out_trt = out_trt.reshape(1, 1, 512, 512)
+                depthImage = np.squeeze(np.transpose(out_trt, (0, 2, 3, 1)))
+                # out_trt  = out_trt / out_trt.max() * 255 
+                # out_trt = cv2.cvtColor(out_trt, cv2.COLOR_RGB2BGR)
+                # cv2.imwrite('./depth/simpit_trt_{i}.png', out_trt)
+            
+            speed = "{: 8.6f}".format(slam.track(image[i], depthImage, tframe[i], args.frontVelocity))
             X = "{: 8.6f}".format(slam.getdeltx())
             Y = "{: 8.6f}".format(slam.getdelty())
             Z = "{: 8.6f}".format(slam.getdeltz())
