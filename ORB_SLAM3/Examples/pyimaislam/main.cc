@@ -143,9 +143,9 @@ double Pyimaislam::track(cv::Mat image, double tframe, bool frontVelocity = true
 {
     //std::cout << image << std::endl;
 #ifndef DEPTH
-    auto currentpose = SLAM->TrackMonocular(image,tframe);
-#else
     auto currentpose = SLAM->TrackRGBD(image, imageDepth, tframe);
+#else
+    auto currentpose = SLAM->TrackMonocular(image,tframe);
 #endif
 
     if (SLAM->GetTrackingState() != OK_STATE)
