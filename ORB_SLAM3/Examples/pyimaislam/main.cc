@@ -80,7 +80,7 @@ class Pyimaislam
         
         bool reset();
         bool resetVelocity();
-#ifndef DPETH
+#ifndef DEPTH
         double track(cv::Mat im, cv::Mat imDepth, double tframe, bool frontVelocity);
 #else
         double track(cv::Mat im, double tframe, bool frontVelocity);
