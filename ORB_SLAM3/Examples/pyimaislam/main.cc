@@ -98,7 +98,7 @@ Pyimaislam::Pyimaislam()
 {
     //Vocabulary/ORBvoc.txt ./Examples/Monocular/TUM1.yaml
     char *a1="/home/aaeon/workspace/orb_slam_endoscope/ORB_SLAM3/Vocabulary/ORBvoc.txt";
-#ifndef DPETH
+#ifndef DEPTH
     char *a2="/home/aaeon/workspace/orb_slam_endoscope/ORB_SLAM3/Examples/RGB-D/Endoscopy.yaml";
     SLAM = new ORB_SLAM3::System(a1,a2,ORB_SLAM3::System::RGBD,true);
 #else
@@ -135,14 +135,14 @@ bool  Pyimaislam::resetVelocity()
     return true;
 }
 
-#ifndef DPETH
+#ifndef DEPTH
 double Pyimaislam::track(cv::Mat image, cv::Mat imageDepth, double tframe, bool frontVelocity = true)
 #else
 double Pyimaislam::track(cv::Mat image, double tframe, bool frontVelocity = true)
 #endif
 {
     //std::cout << image << std::endl;
-#ifndef DPETH
+#ifndef DEPTH
     auto currentpose = SLAM->TrackMonocular(image,tframe);
 #else
     auto currentpose = SLAM->TrackRGBD(image, imageDepth, tframe);
