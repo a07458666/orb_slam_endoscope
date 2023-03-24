@@ -132,10 +132,10 @@ bool  Pyimaislam::resetVelocity()
     frontVelocitys.clear();
     list_t.clear();
     list_tframe.clear();
-    self.deltf = 0;
-    self.deltx = 0;
-    self.delty = 0;
-    self.deltz = 0;
+    this->deltf = 0;
+    this->deltx = 0;
+    this->delty = 0;
+    this->deltz = 0;
     return true;
 }
 
