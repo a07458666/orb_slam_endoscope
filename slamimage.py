@@ -10,7 +10,7 @@ import math
 import glob
 import argparse
 
-from trtInfer import TensorRTInfer
+# from trtInfer import TensorRTInfer
 #video_path = './2022050601.mp4'
 # video_path = '/home/aaeon/maskyolo/video/2022021501.mp4'
 # vidcap = cv2.VideoCapture(video_path)
@@ -56,7 +56,7 @@ def parse_args():
     parser.add_argument('--save_path', type=str, default='slam_2022032101.avi')
     parser.add_argument('--output_txt_path', type=str, default='output.txt')
     parser.add_argument('--frontVelocity', type=bool, default=True)
-    parser.add_argument('--depth', type=bool, default=True) # If you want to set false, the C code must also be modified
+    parser.add_argument('--depth', type=bool, default=False) # If you want to set false, the C code must also be modified
     parser.add_argument('--depth_engine_path', type=str, default="./simipu.trt")
     
     return parser.parse_args()
@@ -102,11 +102,16 @@ def main():
                 # out_trt = cv2.cvtColor(out_trt, cv2.COLOR_RGB2BGR)
                 # cv2.imwrite('./depth/simpit_trt_{i}.png', out_trt)
             
-            speed = "{: 8.6f}".format(slam.track(image[i], depthImage, tframe[i], args.frontVelocity))
+            speed = "{: 8.6f}".format(slam.track(image[i], tframe[i], args.frontVelocity))
+            # speed = "{: 8.6f}".format(slam.track(image[i], depthImage, tframe[i], args.frontVelocity))
             X = "{: 8.6f}".format(slam.getdeltx())
             Y = "{: 8.6f}".format(slam.getdelty())
             Z = "{: 8.6f}".format(slam.getdeltz())
             F = "{: 8.6f}".format(slam.getdeltf())
+            print(f"X :{slam.getdeltx()}")
+            print(f"Y :{slam.getdelty()}")
+            print(f"Z :{slam.getdeltz()}")
+
             # calculate delta mavg
             add_value(mavgX, X)
             add_value(mavgY, Y)

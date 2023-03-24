@@ -13,7 +13,7 @@
 using namespace std;
 
 #define OK_STATE 2
-#define DEPTH
+#define DEPTH_NO
 namespace py = pybind11;
 
 namespace pybind11
@@ -132,6 +132,10 @@ bool  Pyimaislam::resetVelocity()
     frontVelocitys.clear();
     list_t.clear();
     list_tframe.clear();
+    self.deltf = 0;
+    self.deltx = 0;
+    self.delty = 0;
+    self.deltz = 0;
     return true;
 }
 
