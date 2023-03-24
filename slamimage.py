@@ -23,8 +23,6 @@ def loadImage(root, txt_dir = 'rgb.txt'):
     tframe = []
     with open(path,'r') as f:
         for line in f.readlines():
-            if len(images) > 500:
-                break
             try:
                 s = line.split(' ')
                 t = s[1].split('\n')
@@ -94,10 +92,12 @@ def main():
             # ---eddie 0315
             # get the present delta
             if args.depth:
+                img_H, img_W = image[i].shape[0], image[i].shape[1]
                 batcher_data = preprocess_image(image[i])
                 out_trt = trt_infer.infer(batcher_data, top=1)
-                out_trt = out_trt.reshape(1, 1, 512, 512)
-                depthImage = np.squeeze(np.transpose(out_trt, (0, 2, 3, 1)))
+                out_trt = out_trt.reshape(512, 512, 1)
+                # depthImage = np.squeeze(np.transpose(out_trt, (0, 2, 3, 1)))
+                depthImage = cv2.resize(out_trt, (img_W, img_H))
                 # out_trt  = out_trt / out_trt.max() * 255 
                 # out_trt = cv2.cvtColor(out_trt, cv2.COLOR_RGB2BGR)
                 # cv2.imwrite('./depth/simpit_trt_{i}.png', out_trt)
